@@ -30,6 +30,22 @@ var server = HTTP.createServer( function ( request, response ) {
 console.log('listening on port ' + HTTP_PORT ) ;
 
 //
+// Helper functions.
+//
+
+var key_result_obj = function (keys_array , results_array) {
+  //
+  // Takes an array of strings (keys) and maps them
+  // onto an object with the corresponding result value
+  //
+  var returnable_obj = {} ;
+  results_array.forEach( function (temp, idx) {
+    returnable_obj[ keys_array[idx] ] = results_array[idx] ; 
+  });
+  return returnable_obj ;
+};
+
+//
 // Functions for export.
 //
 
@@ -40,14 +56,14 @@ var check = function( ID ) {
   // the number of times that this ID has been checked on.
   //
   return new Promise( function ( fulfill, reject ) {
-    var err;
-    if (err === undefined ) {
-      var result = { status : 'Test status' , checks : '1' };
-      fulfill( result );
-    }
-    else {
-      reject({ error : -1});
-    }
+    var keys = ['checks' , 'complete']; 
+    redis.hmget( PREFIX + ":" + ID, keys )
+      .then( function (result) {
+        fulfill( key_result_obj(keys,result) ) ; 
+      })
+      .catch (function (err) {
+        reject(err) ;
+      });
   });
 };
 
@@ -63,13 +79,12 @@ var add = function ( ID ) {
       'checks'          , 0 , 
       'complete'        , 0 
     )
-      .then( function( result ){ 
-        fulfill( result );
-      })
-      .catch ( function( err ) {
-        reject( err ) ;
-      })
-    ;
+    .then( function( result ){ 
+      fulfill( result );
+    })
+    .catch ( function( err ) {
+      reject( err ) ;
+    });
 
   });
 };
