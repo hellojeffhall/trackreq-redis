@@ -25,7 +25,21 @@ else{
 // End initial vars/consts
 
 var server = HTTP.createServer( function ( request, response ) {
-  response.end('OK!!');    
+  console.log( 'Requested: ' + request.url ) ;
+  response.setHeader( 'Content-Type' , 'text/html');
+  all_pending()
+    .then( function( result ) {
+      response.end(
+        '<!doctype html><html><head></head><body>' + 
+        'Pending requests: ' + result + 
+        '</body></html>'
+      );
+    })
+    .catch( function() {
+      repsonse.statusCode(501);
+      response.end('Error');
+    })
+  ; 
 }).listen( HTTP_PORT );
 console.log('listening on port ' + HTTP_PORT ) ;
 
@@ -133,7 +147,7 @@ var cancel = function ( ID ) {
   });
 }
 
-var num_pending = function ( ID ) {
+var num_pending = function () {
   //
   // Will return the number of 'in progress' requests.
   //
@@ -149,14 +163,14 @@ var num_pending = function ( ID ) {
   });
 };
 
-var all_pending = function ( ID ) {
+var all_pending = function ( ) {
   //
   // Will return all pending requests as an array of objects.
   //
   return new Promise( function( fulfill, reject ){
-    redis.zrange( PREFIX + ':' + 'pending' , 0 , -1 , 'WITHSCORES' )
-      .then( function (result) {
-        fulfill( result );
+    redis.zrange( PREFIX + ':' + 'pending' , 0 , -1, 'WITHSCORES' )
+      .then( function (result_all_pending ) {
+        fulfill( result_all_pending );
       })
       .catch( function (err ) {
         reject( err ) ;
