@@ -1,11 +1,26 @@
 // Initial vars/consts
 
+const IS_DEV = require('./config.js').IS_DEV;
+const PREFIX = require('./config.js').REDIS_KEY_PREFIX ;
+
 const HTTP = require('http');
 const HTTP_PORT = require('./config.js').HTTP_PORT ;
 
 const REDIS_PORT = require('./config.js').REDIS_PORT ;
 const REDIS = require('ioredis'); 
-var redis = new REDIS( REDIS_PORT ); 
+
+var redis ;
+if( IS_DEV ) {
+  redis = new REDIS( { 
+    port                   : REDIS_PORT  ,
+    showFriendlyErrorStack : true 
+  }); 
+}
+else{
+  redis = new REDIS( { 
+    port                   : REDIS_PORT  ,
+  }); 
+}
 
 // End initial vars/consts
 
@@ -38,16 +53,24 @@ var check = function( ID ) {
 
 var add = function ( ID ) {
   //
-  // Will add a status to the Redis server.
+  // This function adds a request ID to the server if it doesn't exist.
   //
-  return new Promise( function ( fulfill, reject ) {
-    var err;
-    if (err === undefined ) {
-      fulfill();
-    }
-    else {
-      reject({ error : -1});
-    }
+
+  return new Promise ( function ( fulfill, reject ) {
+
+    redis.hmset( 
+      PREFIX + ':' + ID , 
+      'checks'          , 0 , 
+      'complete'        , 0 
+    )
+      .then( function( result ){ 
+        fulfill( result );
+      })
+      .catch ( function( err ) {
+        reject( err ) ;
+      })
+    ;
+
   });
 };
 
