@@ -1,0 +1,11 @@
+{
+  "name": "trackreq-redis",
+  "version": "1.0.0",
+  "description": "Module for implementing a lightweight request-tracking system in Redis.",
+  "main": "index.js",
+  "scripts": {
+    "test": "node test.js"
+  },
+  "author": "jrhal",
+  "license": "ISC"
+}
