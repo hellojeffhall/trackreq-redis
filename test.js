@@ -1,56 +1,30 @@
 var trackreq = require('./index.js') ;
 console.log(trackreq) ;
 
-trackreq.add('123')
+var ID = Math.floor( Math.random() * 100 );
+
+trackreq.test_redis_connection()
+  .then( function ( commands_array ) {
+    console.log ('success: redis');
+    process.stdout.write('\t');
+    console.log( commands_array) ;
+  })
+  .catch ( function ( error_obj ) {
+    console.log ('FAIL: redis'  ) ;
+    process.stdout.write('\t');
+    console.log( error_obj ) ;
+  })
+;
+console.log () ;
+
+trackreq.add(ID)
   .then( function () {
-    console.log ('ADD: success') ;
+    console.log ('success: add') ;
     process.stdout.write('\t');
     console.log();
   })
   .catch ( function ( error_obj ) {
-    console.log ('ADD: FAIL') ;
-    process.stdout.write('\t');
-    console.log( error_obj ) ;
-  })
-;
-console.log () ;
-
-trackreq.check('123')
-  .then( function ( result_obj ) {
-    console.log ('CHECK: success') ;
-    process.stdout.write('\t');
-    console.log( result_obj ) ;
-  })
-  .catch ( function ( error_obj ) {
-    console.log ('CHECK: FAIL ') ;
-    process.stdout.write('\t');
-    console.log( error_obj ) ;
-  })
-;
-console.log () ;
-
-trackreq.cancel('123')
-  .then( function () {
-    console.log ('CANCEL: success') ;
-    process.stdout.write('\t');
-    console.log();
-  })
-  .catch ( function ( error_obj ) {
-    console.log ('CANCEL: FAIL') ;
-    process.stdout.write('\t');
-    console.log( error_obj ) ;
-  })
-;
-console.log () ;
-
-trackreq.num_pending()
-  .then( function ( result ) {
-    console.log ('NUM_PENDING: success') ;
-    process.stdout.write('\t');
-    console.log( result ) ;
-  })
-  .catch ( function ( error_obj ) {
-    console.log ('NUM_PENDING: FAIL') ;
+    console.log ('FAIL: add') ;
     process.stdout.write('\t');
     console.log( error_obj ) ;
   })
@@ -59,31 +33,73 @@ console.log () ;
 
 trackreq.all_pending()
   .then( function ( pending_array ) {
-    console.log ('ALL PENDING: success');
+    console.log ('success: all_pending');
     process.stdout.write('\t');
     console.log( pending_array ) ;
   })
   .catch ( function ( error_obj ) {
-    console.log ('ALL PENDING: FAIL');
+    console.log ('FAIL: all_pending ');
     process.stdout.write('\t');
     console.log( error_obj ) ;
   })
 ;
 console.log () ;
 
-trackreq.test_redis_connection()
-  .then( function ( commands_array ) {
-    console.log ('REDIS: success');
+trackreq.num_pending()
+  .then( function ( result ) {
+    console.log ('success: num_pending') ;
     process.stdout.write('\t');
-    console.log( commands_array) ;
+    console.log( result ) ;
   })
   .catch ( function ( error_obj ) {
-    console.log ('REDIS: FAIL');
+    console.log ('FAIL: num_pending') ;
+    process.stdout.write('\t');
+    console.log( error_obj ) ;
+  })
+;
+
+console.log () ;
+
+trackreq.complete(ID)
+  .then( function () {
+    console.log ('success: complete') ;
+    process.stdout.write('\t');
+    console.log();
+  })
+  .catch ( function ( error_obj ) {
+    console.log ('FAIL: complete') ;
     process.stdout.write('\t');
     console.log( error_obj ) ;
   })
 ;
 console.log () ;
 
+trackreq.check(ID)
+  .then( function ( result_obj ) {
+    console.log ('success: check') ;
+    process.stdout.write('\t');
+    console.log( result_obj ) ;
+  })
+  .catch ( function ( error_obj ) {
+    console.log ('FAIL: check ') ;
+    process.stdout.write('\t');
+    console.log( error_obj ) ;
+  })
+;
+console.log () ;
+
+trackreq.cancel(ID)
+  .then( function () {
+    console.log ('success: cancel') ;
+    process.stdout.write('\t');
+    console.log();
+  })
+  .catch ( function ( error_obj ) {
+    console.log ('FAIL: cancel') ;
+    process.stdout.write('\t');
+    console.log( error_obj ) ;
+  })
+;
+console.log () ;
 
 

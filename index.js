@@ -67,6 +67,30 @@ var check = function( ID ) {
   });
 };
 
+var complete = function ( ID ) {
+  //
+  // This function completes a request with the given ID.
+  //
+
+  return new Promise ( function ( fulfill, reject ) {
+    redis.hset( 
+      PREFIX + ':' + ID , 
+      'complete'        , 1 
+    )
+    .then( function( result ){
+      // 
+      // Add to our index of pending requests.
+      //
+      redis.zrem( PREFIX + ':' + 'pending' , ID ) ;
+      fulfill( result );
+    })
+    .catch ( function( err ) {
+      reject( err ) ;
+    });
+  });
+
+};
+
 var add = function ( ID ) {
   //
   // This function adds a request ID to the server if it doesn't exist.
@@ -80,6 +104,10 @@ var add = function ( ID ) {
       'complete'        , 0 
     )
     .then( function( result ){ 
+      //
+      // Add to our index of pending requests. 
+      //
+      redis.zadd( PREFIX + ':' + 'pending' , Date.now() , ID ) ;
       fulfill( result );
     })
     .catch ( function( err ) {
@@ -93,14 +121,15 @@ var cancel = function ( ID ) {
   //
   // Will cancel the request with the given ID. 
   //
-  return new Promise( function ( fulfill, reject ) {
-    var err;
-    if (err === undefined ) {
-      fulfill();
-    }
-    else {
-      reject({ error : -1});
-    }
+  return new Promise(  function( fulfill, reject ) {
+    redis.del( PREFIX + ':' + ID )
+      .then( function( result ) {
+        fulfill();       
+      })
+      .catch( function( err ) {
+        reject(err);
+      })
+    ;
   });
 }
 
@@ -108,15 +137,15 @@ var num_pending = function ( ID ) {
   //
   // Will return the number of 'in progress' requests.
   //
-  return new Promise( function ( fulfill, reject ) {
-    var err;
-    if (err === undefined ) {
-      var result = 0 ;
-      fulfill( result );
-    }
-    else {
-      reject({ error : -1});
-    }
+  return new Promise( function( fulfill, reject ){
+    redis.zcount( PREFIX + ':' + 'pending' , '-inf' , '+inf')
+      .then( function ( result ) {
+        fulfill( result );
+      })
+      .catch( function ( err ) {
+        reject( err ) ;
+      }) 
+    ;
   });
 };
 
@@ -124,33 +153,31 @@ var all_pending = function ( ID ) {
   //
   // Will return all pending requests as an array of objects.
   //
-  return new Promise( function ( fulfill, reject ) {
-    var err;
-    if (err === undefined ) {
-      var result = [] ;
-      fulfill( result );
-    }
-    else {
-      reject({ error : -1});
-    }
+  return new Promise( function( fulfill, reject ){
+    redis.zrange( PREFIX + ':' + 'pending' , 0 , -1 , 'WITHSCORES' )
+      .then( function (result) {
+        fulfill( result );
+      })
+      .catch( function (err ) {
+        reject( err ) ;
+      })
+    ;
   });
 };
 
 var test_redis_connection = function() {
   redis.setnx('status' , 0);     
   redis.incr('status'); 
-  var result = redis.get('status') ;
+  var result = redis.get('status');
 
   return new Promise( function ( fulfill, reject ) {
     var err = result === null;
-
     if ( !err ) {
       fulfill( result );
     }
     else {
       reject({ error : -1});
     }
-
   });
 }
 // 
@@ -158,10 +185,11 @@ var test_redis_connection = function() {
 //
 
 module.exports = {
-  add                   : add ,
-  check                 : check ,
-  cancel                : cancel ,
+  add                   : add         ,
+  check                 : check       ,
+  cancel                : cancel      ,
   num_pending           : num_pending ,
   all_pending           : all_pending ,
+  complete              : complete    ,
   test_redis_connection : test_redis_connection 
 }
