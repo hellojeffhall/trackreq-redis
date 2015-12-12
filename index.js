@@ -166,9 +166,9 @@ var all_pending = function ( ID ) {
 };
 
 var test_redis_connection = function() {
-  redis.setnx('status' , 0);     
-  redis.incr('status'); 
-  var result = redis.get('status');
+  redis.setnx('test_ID' , 0);     
+  redis.incr('test_ID'); 
+  var result = redis.get('test_ID');
 
   return new Promise( function ( fulfill, reject ) {
     var err = result === null;
