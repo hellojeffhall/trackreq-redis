@@ -71,5 +71,19 @@ trackreq.all_pending()
 ;
 console.log () ;
 
+trackreq.test_redis_connection()
+  .then( function ( commands_array ) {
+    console.log ('REDIS: success');
+    process.stdout.write('\t');
+    console.log( commands_array) ;
+  })
+  .catch ( function ( error_obj ) {
+    console.log ('REDIS: FAIL');
+    process.stdout.write('\t');
+    console.log( error_obj ) ;
+  })
+;
+console.log () ;
+
 
 

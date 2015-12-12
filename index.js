@@ -2,8 +2,11 @@
 
 const HTTP = require('http');
 const HTTP_PORT = require('./config.js').HTTP_PORT ;
+
 const REDIS_PORT = require('./config.js').REDIS_PORT ;
-const REDIS = require('ioredis'); var redis = new REDIS( REDIS_PORT ); 
+const REDIS = require('ioredis'); 
+var redis = new REDIS( REDIS_PORT ); 
+
 // End initial vars/consts
 
 var server = HTTP.createServer( function ( request, response ) {
@@ -95,14 +98,32 @@ var all_pending = function ( ID ) {
   });
 };
 
+var test_redis_connection = function() {
+  redis.setnx('status' , 0);     
+  redis.incr('status'); 
+  var result = redis.get('status') ;
+
+  return new Promise( function ( fulfill, reject ) {
+    var err = result === null;
+
+    if ( !err ) {
+      fulfill( result );
+    }
+    else {
+      reject({ error : -1});
+    }
+
+  });
+}
 // 
 // Export
 //
 
 module.exports = {
-  add         : add,
-  check       : check,
-  cancel      : cancel,
-  num_pending : num_pending,
-  all_pending : all_pending
+  add                   : add ,
+  check                 : check ,
+  cancel                : cancel ,
+  num_pending           : num_pending ,
+  all_pending           : all_pending ,
+  test_redis_connection : test_redis_connection 
 }
