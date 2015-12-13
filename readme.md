@@ -3,7 +3,7 @@
 ###About
 A module for implementing a lightweight request-tracking system in Redis. 
 
-The intent behind this project is to create an easy-to-use API for tracking client requests on a server, especailly in the context of websockets that sometimes drop. You *could* just store requests in a JavaScript array in Node, but in a clustered node configuration that array would not be shared between processes. By tracking requests in a Redis instance, all Node processes can check the status of a request. In addition, other services can easily use the API for other purposes, e.g., visual monitoring of incomplete requests via the included HTTP server.
+The intent behind this project is to create an easy-to-use API for tracking client requests on a server, especailly in the context of websockets that sometimes drop. You *could* just store requests in a JavaScript array in Node, but in a clustered node configuration that array would not be shared between processes. By tracking requests in a Redis instance, all Node processes can check the status of a request. In addition, other services can easily use the API for other purposes, e.g., the included web-based GUI for human monitoring of incomplete requests.
 
 ###Lifecycle
 * A client sends a request with an ID,  and expects the server to issue a confirmation when the request has been processed.
@@ -17,7 +17,7 @@ The intent behind this project is to create an easy-to-use API for tracking clie
 //In the future this should be changed to 
 // reflect the npm name (e.g., require('trackreq-redis') )
 // 
-var tr = require('./index,js') ;
+var tr = require( './index,js' ) ;
 
 // 
 // To test the connection with Redis.
@@ -32,7 +32,7 @@ tr.add( 'ab-123' ) ;
 // 
 // Check on the request with the given ID.
 // 
-tr.check('ab-123') ;
+tr.check( 'ab-123' ) ;
 
 // 
 // Get the number of incomplete requests.
@@ -47,12 +47,12 @@ tr.all_pending() ;
 // 
 // Mark a request with a given ID as complete.
 // 
-tr.complete('ab-123') ;
+tr.complete( 'ab-123' ) ;
 
 // 
 // Delete a request.
 // 
-tr.cancel('ab-123') ;
+tr.cancel( 'ab-123' ) ;
 ```
 
 
