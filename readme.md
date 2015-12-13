@@ -10,7 +10,7 @@ The intent behind this project is to create an easy-to-use API for tracking clie
 * If the server doesn't respond in a timely fashion, the client can ask the server the status of the previous request.
 * The server determines whether or not the request was completed, or whether or not it was even recieved.
 * The client continues waiting if the request is still processing, or resubmits the request if the server never recieved it.
-* 
+
 ### API/ Examples 
 ```javascript
 // 
