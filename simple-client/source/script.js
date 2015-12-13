@@ -20,8 +20,8 @@
   var Dashboard = React.createClass({
     render : function() {
       console.log('PROPS' + this.props);
-      var request_li_array = this.props.requests_array.map( function( temp ) {
-        return (<li>{temp.id}</li>);
+      var request_li_array = this.props.requests_array.map( function(temp,idx) {
+        return (<li key={idx}>{temp.id}</li>);
       });
       console.log('ELs ARRAY ' + request_li_array) ;
 
@@ -39,6 +39,7 @@
 
   ReactDOM.render( 
     <Dashboard
+      key={'dashboard_01'}
       requests_array={requests_array} 
     /> , app 
   ); 

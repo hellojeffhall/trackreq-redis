@@ -18,10 +18,10 @@
 
     render: function () {
       console.log('PROPS' + this.props);
-      var request_li_array = this.props.requests_array.map(function (temp) {
+      var request_li_array = this.props.requests_array.map(function (temp, idx) {
         return React.createElement(
           'li',
-          null,
+          { key: idx },
           temp.id
         );
       });
@@ -44,6 +44,7 @@
   });
 
   ReactDOM.render(React.createElement(Dashboard, {
+    key: 'dashboard_01',
     requests_array: requests_array
   }), app);
 })();
