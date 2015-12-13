@@ -50,7 +50,8 @@ tr.all_pending() ;
 tr.complete( 'ab-123' ) ;
 
 // 
-// Delete a request.
+// Delete a request, e.g., if the client wants to 
+// cancel a request before it has finished processing.
 // 
 tr.cancel( 'ab-123' ) ;
 ```
