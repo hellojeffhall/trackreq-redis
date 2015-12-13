@@ -176,7 +176,7 @@ var test_cancel = function ( ID ) {
 //
 
 
-const ID = Math.floor( Math.random() * 100 );
+const ID = Math.floor( Math.random() * 100000 );
 var DELAY = 0 ;
 const INCR_DELAY = 50 ;
 //
@@ -217,7 +217,6 @@ DELAY += INCR_DELAY ;
 setTimeout( function() { 
   test_cancel(ID)     
     .then( test_check(ID)      )
-    .then( )
 }, DELAY ) ;
 
 DELAY += INCR_DELAY ;

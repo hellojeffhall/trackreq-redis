@@ -1,11 +1,25 @@
 {
   "name": "trackreq-redis",
+  "babel": {
+    "presets": [
+      "react"
+    ]
+  },
   "version": "1.0.0",
   "description": "Module for implementing a lightweight request-tracking system in Redis.",
   "main": "index.js",
   "scripts": {
-    "test": "node test.js"
+    "test"  : "node test.js" ,
+    "build" : "gulp build"
   },
   "author": "jrhal",
-  "license": "ISC"
+  "license": "ISC",
+  "devDependencies": {
+    "gulp"              : "^3.9.0" ,
+    "gulp-babel"        : "^6.1.1" ,
+    "babel-preset-react": "^6.3.13"
+  },
+  "dependencies": {
+    "ioredis": "^1.12.2"
+  }
 }

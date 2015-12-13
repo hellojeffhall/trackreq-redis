@@ -1,5 +1,8 @@
 // Initial vars/consts
 
+const join = require('path').join ;
+const fs = require('fs');
+
 const IS_DEV = require('./config.js').IS_DEV;
 const PREFIX = require('./config.js').REDIS_KEY_PREFIX ;
 
@@ -26,20 +29,27 @@ else{
 
 var server = HTTP.createServer( function ( request, response ) {
   console.log( 'Requested: ' + request.url ) ;
-  response.setHeader( 'Content-Type' , 'text/html');
-  all_pending()
-    .then( function( result ) {
-      response.end(
-        '<!doctype html><html><head></head><body>' + 
-        'Pending requests: ' + result + 
-        '</body></html>'
-      );
-    })
-    .catch( function() {
-      repsonse.statusCode(501);
-      response.end('Error');
-    })
-  ; 
+
+  if ( request.url === '/script.js' ) {
+    response.statusCode = 200 ;
+    response.setHeader( 'Content-Type' , 'text/javascript' ) ;
+
+    var to_serve = join( './', 'simple-client' , 'dist' , 'script.js' ) ;
+    fs.createReadStream( to_serve ).pipe(response);
+  }
+  else if ( request.url === '/index.html' || request.url === '/' ) {
+    response.statusCode = 200 ;
+    response.setHeader( 'Content-Type' , 'text/html' ) ;
+
+    var to_serve = join( './', 'simple-client' , 'dist', 'index.html' ) ;
+    fs.createReadStream( to_serve ).pipe(response);
+  }
+  else {
+    response.statusCode = 404 ;
+    response.setHeader('Content-Type' , 'text/html' ) ;
+    response.end('<h2>Sorry!</h2><br> Nothing found for that URL.');
+  } 
+
 }).listen( HTTP_PORT );
 console.log('listening on port ' + HTTP_PORT ) ;
 
@@ -71,7 +81,7 @@ var check = function( ID ) {
   //
   return new Promise( function ( fulfill, reject ) {
     var keys = ['checks' , 'complete']; 
-    redis.hmget( PREFIX + ":" + ID, keys )
+    redis.hmget( PREFIX + ':request:' + ID, keys )
       .then( function (result) {
         fulfill( key_result_obj(keys,result) ) ; 
       })
@@ -88,7 +98,7 @@ var complete = function ( ID ) {
 
   return new Promise ( function ( fulfill, reject ) {
     redis.hset( 
-      PREFIX + ':' + ID , 
+      PREFIX + ':request:' + ID , 
       'complete'        , 1 
     )
     .then( function( result ){
@@ -113,7 +123,7 @@ var add = function ( ID ) {
   return new Promise ( function ( fulfill, reject ) {
 
     redis.hmset( 
-      PREFIX + ':' + ID , 
+      PREFIX + ':request:' + ID , 
       'checks'          , 0 , 
       'complete'        , 0 
     )
@@ -136,8 +146,10 @@ var cancel = function ( ID ) {
   // Will cancel the request with the given ID. 
   //
   return new Promise(  function( fulfill, reject ) {
-    redis.del( PREFIX + ':' + ID )
+    redis.del( PREFIX + ':request:' + ID )
       .then( function( result ) {
+        // Don't forget to remove from pending requests.
+        redis.zrem( PREFIX + ':' + 'pending' , ID ) ;
         fulfill();       
       })
       .catch( function( err ) {
