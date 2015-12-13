@@ -5,7 +5,7 @@ A module for implementing a lightweight request-tracking system in Redis.
 The intent behind this project is to create an easy-to-use API for tracking client requests on a server, especailly in the context of websockets that sometimes drop. 
 
 ### API/ Examples 
-```
+```javascript
     // 
     // In the future this should be changed to 
     // reflect the npm name (e.g., require('trackreq-redis') )
